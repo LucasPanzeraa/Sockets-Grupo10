@@ -1,5 +1,3 @@
-package Sockets;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -7,13 +5,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class Servidor {
-    private static final int puertoDelServidor = 12345;
+    private static final int puertoDelServidor = 60246;
     private static final int tamañoDelBuffer = 1024;
 
     public static void main(String[] args) {
         try {
             DatagramSocket socketServidor = new DatagramSocket(puertoDelServidor); // escucha en el puerto recibido
-
             System.out.println("Servidor UDP iniciado en el puerto " + puertoDelServidor);
 
             byte[] buffer = new byte[tamañoDelBuffer]; //  buffer para almacenar los datos recibidos.
@@ -60,13 +57,13 @@ public class Servidor {
 
         if (nombreCliente.equalsIgnoreCase("Lucas")) {     // equalsIgnoreCase es para que se comparen dos strings
             try {                                                     // sin importar las mayusculas o las minusculas
-                return InetAddress.getByName("192.168.0.1");
+                return InetAddress.getByName("172.16.255.220");
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-        } else if (nombreCliente.equalsIgnoreCase("cliente2")) {
+        } else if (nombreCliente.equalsIgnoreCase("Juan")) {
             try {
-                return InetAddress.getByName("192.168.0.2");
+                return InetAddress.getByName("172.16.255.228");
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
