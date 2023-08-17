@@ -28,6 +28,7 @@ public class Cliente {
 
             Scanner scanner = new Scanner(System.in);
             while (true) {
+                System.out.println("Ingresar la ip y el mensaje a enviar");
                 String message = scanner.nextLine();
                 mandarMensaje(message);
             }
@@ -56,6 +57,7 @@ public class Cliente {
 
             while (true) {
                 try {
+
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                     clientSocket.receive(receivePacket);
 
@@ -70,7 +72,8 @@ public class Cliente {
 
     public static void main(String[] args) {
         try {
-            InetAddress serverAddress = InetAddress.getByName("172.16.255.220");
+
+            InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
 
             Cliente client = new Cliente(serverAddress);
             client.inicio();

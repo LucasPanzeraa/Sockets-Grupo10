@@ -2,9 +2,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
 public class Servidor {
     private static final int puertoServidor = 60246;
     private static final int tamañoDelBaffer = 1024;
@@ -41,37 +41,33 @@ public class Servidor {
                     clients.put(clientAddress, clientPort);
                 }
 
-                // Verificar si el mensaje es un comando de envío de mensaje privado
-                if (message.startsWith("@")) {
+                String ipDestino = "/";
+                String mensajeFinal = "";
+                boolean arroba = false;
 
-                    String[] parts = message.split(" ", 2);
-                    if (parts.length == 2) {
+                for (int i=0; i < message.length(); i++){
+                    if (message.charAt(i) != '@' && arroba == false){
+                        ipDestino = ipDestino + message.charAt(i);
 
-                        String recipientName = parts[0].substring(1);
-                        String privateMessage = parts[1];
 
-                        InetAddress recipientAddress = null;
-                        int recipientPort;
-
-                        for (Map.Entry<InetAddress, Integer> entry : clients.entrySet()) {
-                            if (entry.getValue().equals(clientPort)) {
-
-                                recipientAddress = entry.getKey();
-                                break;
-                            }
-                        }
-
-                        if (recipientAddress != null) {
-                            recipientPort = clients.get(recipientAddress);
-                            sendMessageToClient("Mensaje privado de " + clientAddress + ":" + clientPort + ": " +
-                            privateMessage, recipientAddress, recipientPort);
-
-                        }
+                    }else {
+                        arroba = true;
+                        mensajeFinal = mensajeFinal + message.charAt(i);
                     }
                 }
-                // Enviamos un ACK al cliente
 
-                sendAck(clientAddress, clientPort);
+                for (Map.Entry<InetAddress, Integer> clientes : clients.entrySet()){
+                    InetAddress ipAux = clientes.getKey();
+                    if (ipAux.toString().equals(ipDestino)){
+                        byte[] mensaje = mensajeFinal.getBytes();
+                        receivePacket = new DatagramPacket(mensaje, mensaje.length, ipAux, clientPort);
+                        serverSocket.send(receivePacket);
+                        sendAck(clientAddress, clientPort);
+
+                    }
+                }
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
