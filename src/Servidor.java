@@ -2,11 +2,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 public class Servidor {
-    private static final int puertoServidor = 60246;
+    private static final int puertoServidor = 42385;
     private static final int tamañoDelBaffer = 1024;
 
     private DatagramSocket serverSocket;
@@ -24,6 +23,18 @@ public class Servidor {
         }
     }
 
+
+    public String ipDestino(String message){
+        String ipDestino = "";
+        boolean arroba = false;
+
+        for (int i=0; i < message.length(); i++) {
+            if (message.charAt(i) != '@' && !arroba) {
+                ipDestino = ipDestino + message.charAt(i);
+            }
+        }
+        return ipDestino;
+    }
     public void start() {
         byte[] receiveBuffer = new byte[tamañoDelBaffer];
         while (true) {
@@ -37,16 +48,16 @@ public class Servidor {
                 String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + message);
 
-                if (!clients.containsKey(clientAddress)) {
-                    clients.put(clientAddress, clientPort);
-                }
+
 
                 String ipDestino = "/";
                 String mensajeFinal = "";
                 boolean arroba = false;
 
+
+
                 for (int i=0; i < message.length(); i++){
-                    if (message.charAt(i) != '@' && arroba == false){
+                    if (message.charAt(i) != '@' && !arroba){
                         ipDestino = ipDestino + message.charAt(i);
 
 
@@ -56,6 +67,20 @@ public class Servidor {
                     }
                 }
 
+                if (!clients.containsKey(clientAddress)) {
+                    clients.put(clientAddress, clientPort);
+                    clients.put(InetAddress.getByName("172.16.255.162"), clientPort);
+                }
+
+
+                for (Map.Entry<InetAddress, Integer>clientes : clients.entrySet()){
+                    if (clientes.getKey().toString().equals(ipDestino)){
+                        InetAddress IPDestino = clientes.getKey();
+                        sendMessageToClient(mensajeFinal, IPDestino, clientPort);
+                    }
+                }
+
+
                 for (Map.Entry<InetAddress, Integer> clientes : clients.entrySet()){
                     InetAddress ipAux = clientes.getKey();
                     if (ipAux.toString().equals(ipDestino)){
@@ -63,7 +88,6 @@ public class Servidor {
                         receivePacket = new DatagramPacket(mensaje, mensaje.length, ipAux, clientPort);
                         serverSocket.send(receivePacket);
                         sendAck(clientAddress, clientPort);
-
                     }
                 }
 

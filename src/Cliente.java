@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.util.Scanner;
 
 public class Cliente {
-    private static final int puertoDelServer = 60246;
+    private static final int puertoDelServer = 42385;
     private static final int TamañoDelBuffer = 1024;
 
     private DatagramSocket clientSocket;
@@ -72,8 +72,8 @@ public class Cliente {
 
     public static void main(String[] args) {
         try {
-
-            InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
+            Scanner scanner = new Scanner(System.in);
+            InetAddress serverAddress = InetAddress.getByName(scanner.nextLine());
 
             Cliente client = new Cliente(serverAddress);
             client.inicio();
