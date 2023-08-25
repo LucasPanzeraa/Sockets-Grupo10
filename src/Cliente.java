@@ -1,84 +1,121 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.Scanner;
+    import java.io.IOException;
+    import java.net.DatagramPacket;
+    import java.net.DatagramSocket;
+    import java.net.InetAddress;
+    import java.util.HashMap;
+    import java.util.Map;
+    public class Servidor {
+        private static final int puertoServidor = 42385;
+        private static final int tamañoDelBaffer = 1024;
 
-public class Cliente {
-    private static final int puertoDelServer = 42385;
-    private static final int TamañoDelBuffer = 1024;
+        private DatagramSocket serverSocket;
+        private Map<InetAddress, Integer> clients;
 
-    private DatagramSocket clientSocket;
-    private InetAddress serverAddress;
 
-    public Cliente(InetAddress serverAddress) {
-        try {
-            clientSocket = new DatagramSocket();
-            this.serverAddress = serverAddress;
-            System.out.println("Cliente conectado al servidor: " + serverAddress);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+        public Servidor() {
 
-    public void inicio() {
-        try {
-            Thread receiveThread = new Thread(new RecibirMensaje());
-            receiveThread.start();
-
-            Scanner scanner = new Scanner(System.in);
-            while (true) {
-                System.out.println("Ingresar la ip y el mensaje a enviar");
-                String message = scanner.nextLine();
-                mandarMensaje(message);
-            }
-        } finally {
-            if (clientSocket != null) {
-                clientSocket.close();
+            try {
+                serverSocket = new DatagramSocket(puertoServidor);
+                clients = new HashMap<>();
+                System.out.println("Servidor listo para recibir conexiones...");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-    }
 
-    private void mandarMensaje(String message) {
-        try {
-            byte[] sendBuffer = message.getBytes();
 
-            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, serverAddress, puertoDelServer);
-            clientSocket.send(sendPacket);
-        } catch (IOException e) {
-            e.printStackTrace();
+        public String ipDestino(String message){
+            String ipDestino = "";
+            boolean arroba = false;
+
+            for (int i=0; i < message.length(); i++) {
+                if (message.charAt(i) != '@' && !arroba) {
+                    ipDestino = ipDestino + message.charAt(i);
+                }
+            }
+            return ipDestino;
         }
-    }
-
-    private class RecibirMensaje implements Runnable {
-        @Override
-        public void run() {
-            byte[] receiveBuffer = new byte[TamañoDelBuffer];
-
+        public void start() {
+            byte[] receiveBuffer = new byte[tamañoDelBaffer];
             while (true) {
                 try {
-
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                    clientSocket.receive(receivePacket);
+                    serverSocket.receive(receivePacket);
 
-                    String receivedMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                    System.out.println("Mensaje recibido del servidor: " + receivedMessage);
+                    InetAddress clientAddress = receivePacket.getAddress();
+                    int clientPort = receivePacket.getPort();
+
+                    String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                    System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + message);
+
+
+
+                    String ipDestino = "/";
+                    String mensajeFinal = "";
+                    boolean arroba = false;
+
+
+
+                    for (int i=0; i < message.length(); i++){
+                        if (message.charAt(i) != '@' && !arroba){
+                            ipDestino = ipDestino + message.charAt(i);
+
+
+                        }else {
+                            arroba = true;
+                            mensajeFinal = mensajeFinal + message.charAt(i);
+                        }
+                    }
+
+                    if (!clients.containsKey(clientAddress)) {
+                        clients.put(clientAddress, clientPort);
+                    }
+
+                    for (Map.Entry<InetAddress, Integer>clientes : clients.entrySet()){
+                        if (clientes.getKey().toString().equals(ipDestino)){
+                            InetAddress IPDestino = clientes.getKey();
+                            sendMessageToClient(mensajeFinal, IPDestino, clientes.getValue());
+                        }
+                    }
+
+
+                    for (Map.Entry<InetAddress, Integer> clientes : clients.entrySet()){
+                        InetAddress ipAux = clientes.getKey();
+                        if (ipAux.toString().equals(ipDestino)){
+                            byte[] mensaje = mensajeFinal.getBytes();
+                            receivePacket = new DatagramPacket(mensaje, mensaje.length, ipAux, clientPort);
+                            serverSocket.send(receivePacket);
+                            sendAck(clientAddress, clientPort);
+                        }
+                    }
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
+        private void sendAck(InetAddress clientAddress, int clientPort) throws IOException {
+            String ackMessage = "ACK";
+            byte[] ackBuffer = ackMessage.getBytes();
 
-    public static void main(String[] args) {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            InetAddress serverAddress = InetAddress.getByName(scanner.nextLine());
-
-            Cliente client = new Cliente(serverAddress);
-            client.inicio();
-        } catch (IOException e) {
-            e.printStackTrace();
+            DatagramPacket ackPacket = new DatagramPacket(ackBuffer, ackBuffer.length, clientAddress, clientPort);
+            serverSocket.send(ackPacket);
         }
+        private void sendMessageToClient(String message, InetAddress clientAddress, int clientPort) throws IOException {
+            byte[] sendBuffer = message.getBytes();
+
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, clientAddress, clientPort);
+            serverSocket.send(sendPacket);
+        }
+
+
+        public static void main(String[] args) {
+
+            Servidor server = new Servidor();
+
+            server.start();
+
+        }
+
     }
-}
