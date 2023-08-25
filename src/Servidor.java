@@ -23,18 +23,6 @@
             }
         }
 
-
-        public String ipDestino(String message){
-            String ipDestino = "";
-            boolean arroba = false;
-
-            for (int i=0; i < message.length(); i++) {
-                if (message.charAt(i) != '@' && !arroba) {
-                    ipDestino = ipDestino + message.charAt(i);
-                }
-            }
-            return ipDestino;
-        }
         public void start() {
             byte[] receiveBuffer = new byte[tamañoDelBaffer];
             while (true) {
@@ -48,13 +36,9 @@
                     String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
                     System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + message);
 
-
-
                     String ipDestino = "/";
                     String mensajeFinal = "";
                     boolean arroba = false;
-
-
 
                     for (int i=0; i < message.length(); i++){
                         if (message.charAt(i) != '@' && !arroba){
@@ -75,21 +59,13 @@
                         if (clientes.getKey().toString().equals(ipDestino)){
                             InetAddress IPDestino = clientes.getKey();
                             sendMessageToClient(mensajeFinal, IPDestino, clientes.getValue());
-                        }
-                    }
 
-
-                    for (Map.Entry<InetAddress, Integer> clientes : clients.entrySet()){
-                        InetAddress ipAux = clientes.getKey();
-                        if (ipAux.toString().equals(ipDestino)){
                             byte[] mensaje = mensajeFinal.getBytes();
-                            receivePacket = new DatagramPacket(mensaje, mensaje.length, ipAux, clientPort);
+                            receivePacket = new DatagramPacket(mensaje, mensaje.length, clientAddress, clientPort);
                             serverSocket.send(receivePacket);
                             sendAck(clientAddress, clientPort);
                         }
                     }
-
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -113,9 +89,7 @@
         public static void main(String[] args) {
 
             Servidor server = new Servidor();
-
             server.start();
-
         }
 
     }
