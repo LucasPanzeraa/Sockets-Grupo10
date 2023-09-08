@@ -97,7 +97,6 @@ public class FirmaDigital {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
 

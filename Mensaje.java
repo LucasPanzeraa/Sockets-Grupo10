@@ -1,14 +1,24 @@
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class Mensaje implements Serializable {
     private String mensajeHasheado;
     private String mensajeCifrado;
     private String destino;
-
-    public Mensaje(String mensajeHasheado, String mensajeCifrado, String destino) {
+    private PublicKey pubkey;
+    public Mensaje(String mensajeHasheado, String mensajeCifrado, String destino, PublicKey pubkey) {
         this.mensajeHasheado = mensajeHasheado;
         this.mensajeCifrado = mensajeCifrado;
         this.destino = destino;
+        this.pubkey = pubkey;
+    }
+
+    public PublicKey getPubkey() {
+        return pubkey;
+    }
+
+    public void setPubkey(PublicKey pubkey) {
+        this.pubkey = pubkey;
     }
 
     public String getMensajeHasheado() {
@@ -33,5 +43,10 @@ public class Mensaje implements Serializable {
 
     public void setDestino(String destino) {
         this.destino = destino;
+    }
+
+    @Override
+    public String toString() {
+        return  mensajeHasheado + mensajeCifrado + destino + pubkey;
     }
 }
