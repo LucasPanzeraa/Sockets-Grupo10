@@ -1,3 +1,5 @@
+package src.src;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -8,7 +10,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.*;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Cliente {
@@ -16,7 +17,7 @@ public class Cliente {
     private static final int TamañoDelBuffer = 1024;
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
-    private PublicKey  receivedPublicKey;
+    private PublicKey  publicKeyServidor;
     private DatagramSocket clientSocket;
     private InetAddress serverAddress;
 
@@ -62,7 +63,6 @@ public class Cliente {
 
     private void mandarMensaje(String message) {
 
-        try {
         String ipDestino = "/";
         String mensajeFinal = "";
         boolean arroba = false;
@@ -74,21 +74,37 @@ public class Cliente {
                 mensajeFinal = mensajeFinal + message.charAt(i);
             }
         }
-        Mensaje mensaje =  new Mensaje(Arrays.toString(FirmaDigital.encrypt(ipDestino, Servidor.publicKey.toString())), FirmaDigital.encrypt(mensajeFinal, publicKey.toString()).toString(), FirmaDigital.hasheo(mensajeFinal), null);
-        ByteArrayOutputStream bs= new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream (bs);
-        os.writeObject(mensaje);
-        os.close();
-        byte[] sendBuffer =  bs.toByteArray();
-        DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, serverAddress, puertoDelServer);
-        clientSocket.send(sendPacket);
-    } catch (IOException e) {
-        e.printStackTrace();
-    } catch (IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException |
-             InvalidKeyException e) {
-        throw new RuntimeException(e);
+
+
     }
+
+    public void sendMessageToServer(Mensaje mensaje) {
+        try {
+            // Serializa el mensaje
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream os = new ObjectOutputStream(baos);
+            os.writeObject(mensaje);
+            os.close();
+            byte[] mensajeSerializado = baos.toByteArray();
+
+            // Encripta el mensaje con la clave pública del servidor
+            String mensajeCifrado = RSA.encryptWithPublic(mensajeSerializado.toString(), publicKeyServidor);
+
+            byte[] mensajeCifradoByte = mensajeCifrado.getBytes();
+
+            // Crea un DatagramPacket con el mensaje cifrado
+            DatagramPacket sendPacket = new DatagramPacket(mensajeCifradoByte, mensajeCifradoByte.length, serverAddress, puertoDelServer);
+
+            // Envía el paquete al servidor
+            clientSocket.send(sendPacket);
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException |
+                 InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
 
     private class RecibirMensaje implements Runnable {
         @Override
@@ -100,7 +116,7 @@ public class Cliente {
 
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                     clientSocket.receive(receivePacket);
-                    FirmaDigital.decrypt(receiveBuffer, privateKey);
+                    RSA.decryptWithPrivate(receiveBuffer.toString(), privateKey);
 
                     String receivedMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
                     System.out.println("Mensaje recibido del servidor: " + receivedMessage);
@@ -108,6 +124,8 @@ public class Cliente {
                     e.printStackTrace();
                 } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                          InvalidKeyException | BadPaddingException e) {
+                    throw new RuntimeException(e);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -4,26 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a0eb415d-7395-44fd-bd83-b5d6ef472ae5" name="Changes" comment="" />
+    <list default="true" id="ce94c47e-4817-48b8-a865-5c34db5804c5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Hasher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Mensaje.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/RSA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Cliente.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Servidor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Sockets-Grupo10.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Servidor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sockets-Grupo10.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Sockets-Grupo10.iml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/Cliente.java" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/src/Servidor.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.jdks/openjdk-20.0.2/lib/src.zip!/java.base/java/lang/String.java" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectId" id="2SYrtQwCm6P77ULOs3nSgQJifE0" />
+  <component name="ProjectId" id="2VLwYhQE2lq98jVDXAw9t3MIVvI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -32,41 +49,18 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;
+    &quot;last_opened_file_path&quot;: &quot;E:/Colegio/Redes/Colegio/Redes/Sockets-Grupo10/src&quot;
   }
 }</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a0eb415d-7395-44fd-bd83-b5d6ef472ae5" name="Changes" comment="" />
-      <created>1689334571587</created>
+      <changelist id="ce94c47e-4817-48b8-a865-5c34db5804c5" name="Changes" comment="" />
+      <created>1694628718088</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1689334571587</updated>
+      <updated>1694628718088</updated>
     </task>
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.net.UnknownHostException" package="java.net" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

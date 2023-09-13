@@ -1,3 +1,5 @@
+package src.src;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -10,7 +12,10 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-public class FirmaDigital {
+
+import static com.sun.org.apache.xerces.internal.impl.dv.util.Base64.encode;
+
+public class RSA {
 
     public void writeToFile(String path, byte[] key) throws IOException {
         File f = new File(path);
@@ -54,22 +59,48 @@ public class FirmaDigital {
         return privateKey;
     }
 
-    public static byte[] encrypt(String data, String publicKey) throws BadPaddingException, IllegalBlockSizeException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+
+    public static String encryptWithPublic(String message, PublicKey publicKey1) throws Exception {
+        byte[] messageToBytes = message.getBytes();
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, getPublicKey(publicKey));
-        return cipher.doFinal(data.getBytes());
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey1);
+        byte[] encryptedBytes = cipher.doFinal(messageToBytes);
+        return encode(encryptedBytes);
     }
 
-    public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+
+    public String encryptWithPrivate(String message, PrivateKey privateKey1) throws Exception {
+        byte[] messageToBytes = message.getBytes();
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        return new String(cipher.doFinal(data));
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey1);
+        byte[] encryptedBytes = cipher.doFinal(messageToBytes);
+        return encode(encryptedBytes);
     }
 
-    public static String decrypt(String data, String base64PrivateKey) throws IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        return decrypt(Base64.getDecoder().decode(data.getBytes()), getPrivateKey(base64PrivateKey));
+
+    public static String encode(byte[] data) {
+        return Base64.getEncoder().encodeToString(data);
+    }
+    public static byte[] decode(String data) {
+        return Base64.getDecoder().decode(data);
     }
 
+
+    public static String decryptWithPrivate(String encryptedMessage, PrivateKey privateKey1) throws Exception {
+        byte[] encryptedBytes = decode(encryptedMessage);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey1);
+        byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
+        return new String(decryptedMessage,0, decryptedMessage.length);
+    }
+
+    public String decryptWithPublic(String encryptedMessage, PublicKey publicKey1) throws Exception {
+        byte[] encryptedBytes = decode(encryptedMessage);
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, publicKey1);
+        byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
+        return new String(decryptedMessage, 0, decryptedMessage.length);
+    }
 
     public static String hasheo(String mensaje){
 

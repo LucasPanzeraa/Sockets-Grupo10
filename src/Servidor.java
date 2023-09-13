@@ -1,3 +1,5 @@
+package src.src;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -10,7 +12,7 @@ public class Servidor {
     private static final int puertoServidor = 42385;
     private static final int tamañoDelBaffer = 1024;
     private static PrivateKey privateKey;
-    public static PublicKey publicKey;
+    private static PublicKey publicKey;
     private DatagramSocket serverSocket;
     private Map<InetAddress, PublicKey> clients;
     public Servidor() {
@@ -34,16 +36,23 @@ public class Servidor {
         while (true) {
             try {
 
-                ByteArrayInputStream bs= new ByteArrayInputStream(receiveBuffer); // bytes es el byte[
-                ObjectInputStream is = new ObjectInputStream(bs);
-                Mensaje mensaje = (Mensaje) is.readObject();
-                is.close();
-
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 serverSocket.receive(receivePacket);
 
+                byte[] mensajeCifrado = receivePacket.getData();
+                byte[] mensajeDesencriptado = RSA.decryptWithPrivate(mensajeCifrado.toString(), privateKey).getBytes();
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(mensajeDesencriptado);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+                Mensaje mensaje = (Mensaje) ois.readObject();
+                ois.close();
+
                 InetAddress clientAddress = receivePacket.getAddress();
                 int clientPort = receivePacket.getPort();
+
+                System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + mensaje);
+                System.out.println("Destino: " + mensaje.getDestino());
+                System.out.println("Clave Pública del Cliente: " + mensajeDesencriptado.toString());
 
                 String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + message);
@@ -56,7 +65,7 @@ public class Servidor {
                     sendMessageToClientPrueba(mensaje);
                 }
                 for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
-                    if (clientes.getKey().toString().equals(FirmaDigital.decrypt(mensaje.getDestino().getBytes(),privateKey))){
+                    if (clientes.getKey().toString().equals(RSA.decryptWithPrivate(mensaje.getDestino(),privateKey))){
                         InetAddress IPDestino = clientes.getKey();
                         sendMessageToClientPrueba(mensaje);
 
@@ -79,6 +88,8 @@ public class Servidor {
                 e.printStackTrace();
             } catch (ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                      BadPaddingException | IllegalBlockSizeException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
