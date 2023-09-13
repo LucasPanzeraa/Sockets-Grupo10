@@ -69,7 +69,7 @@ public class RSA {
     }
 
 
-    public String encryptWithPrivate(String message, PrivateKey privateKey1) throws Exception {
+    public static String encryptWithPrivate(String message, PrivateKey privateKey1) throws Exception {
         byte[] messageToBytes = message.getBytes();
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, privateKey1);

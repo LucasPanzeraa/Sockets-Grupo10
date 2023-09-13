@@ -34,8 +34,8 @@ public class Cliente {
             publicKey = pair.getPublic();
 
             Mensaje mensaje = new Mensaje(null, null, null, publicKey);
-            System.out.println(mensaje.toString());
-            mandarMensaje(mensaje.toString());
+
+            sendMessageToServer(mensaje);
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -44,16 +44,26 @@ public class Cliente {
 
     public void inicio() {
         try {
-            Thread receiveThread = new Thread(new RecibirMensaje());
+            Thread receiveThread = new Thread(new recibirMensaje());
             receiveThread.start();
+
+            publicKeyServidor = recivirCalveDelServidor();
+            System.out.println("clave " + publicKeyServidor);
 
             Scanner scanner = new Scanner(System.in);
             while (true) {
-                System.out.println("Ingresar la ip y el mensaje a enviar");
-                String message = scanner.nextLine();
+                System.out.println("Ingresar la ip del destinatario");
+                String ipDestino = scanner.nextLine();
 
-                mandarMensaje(message);
+                System.out.println("ingrese el mensaje");
+                String mensaje = scanner.nextLine();
+
+
+                Mensaje message = encriptacionMensaje(ipDestino, mensaje);
+                sendMessageToServer(message);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             if (clientSocket != null) {
                 clientSocket.close();
@@ -61,21 +71,11 @@ public class Cliente {
         }
     }
 
-    private void mandarMensaje(String message) {
+    public Mensaje encriptacionMensaje (String ipDestino, String mensaje) throws Exception {
 
-        String ipDestino = "/";
-        String mensajeFinal = "";
-        boolean arroba = false;
-        for (int i=0; i < message.length(); i++){
-            if (message.charAt(i) != '@' && !arroba){
-                ipDestino = ipDestino + message.charAt(i);
-            }else {
-                arroba = true;
-                mensajeFinal = mensajeFinal + message.charAt(i);
-            }
-        }
+        Mensaje mensaje1 = new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje), privateKey), RSA.encryptWithPublic(mensaje, publicKeyServidor), ipDestino, null);
 
-
+        return mensaje1;
     }
 
     public void sendMessageToServer(Mensaje mensaje) {
@@ -86,7 +86,7 @@ public class Cliente {
             os.writeObject(mensaje);
             os.close();
             byte[] mensajeSerializado = baos.toByteArray();
-
+            /*
             // Encripta el mensaje con la clave pública del servidor
             String mensajeCifrado = RSA.encryptWithPublic(mensajeSerializado.toString(), publicKeyServidor);
 
@@ -97,16 +97,42 @@ public class Cliente {
 
             // Envía el paquete al servidor
             clientSocket.send(sendPacket);
+
+
+
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException |
                  InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
+
+             */
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private class RecibirMensaje implements Runnable {
+    public PublicKey recivirCalveDelServidor(){
+        try {
+            byte[] receiveBuffer = new byte[TamañoDelBuffer];
+            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+
+            // Espera a recibir un mensaje del servidor
+            clientSocket.receive(receivePacket);
+
+            // Convierte los datos recibidos en un String
+            byte[] claveByte = new String( receivePacket.getData(), 0, receivePacket.getLength()).getBytes();
+
+            PublicKey publicKeyServidor = RSA.getPublicKey(RSA.encode(claveByte));
+
+            return publicKeyServidor;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private class recibirMensaje implements Runnable {
         @Override
         public void run() {
             byte[] receiveBuffer = new byte[TamañoDelBuffer];

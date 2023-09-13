@@ -47,6 +47,8 @@ public class Servidor {
                 Mensaje mensaje = (Mensaje) ois.readObject();
                 ois.close();
 
+                System.out.println(mensaje);
+
                 InetAddress clientAddress = receivePacket.getAddress();
                 int clientPort = receivePacket.getPort();
 
@@ -63,6 +65,7 @@ public class Servidor {
                 if (!clients.containsKey(clientAddress)) {
                     clients.put(clientAddress, mensaje.getPubkey());
                     sendMessageToClientPrueba(mensaje);
+                    System.out.println("mande el mensaje publica servidor");
                 }
                 for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
                     if (clientes.getKey().toString().equals(RSA.decryptWithPrivate(mensaje.getDestino(),privateKey))){
@@ -107,12 +110,17 @@ public class Servidor {
     }
 
     private void sendMessageToClientPrueba(Mensaje mensaje) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        ByteArrayOutputStream bs= new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream (bs);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(baos);
         os.writeObject(mensaje);
         os.close();
-        byte[] sendBuffer =  bs.toByteArray();
-        DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length);
+
+        byte[] mensajeSerializado = baos.toByteArray();
+
+        // Crea un DatagramPacket con el mensaje cifrado
+        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length);
+
+        // Envía el paquete al servidor
         serverSocket.send(sendPacket);
     }
     public static void main(String[] args) {
