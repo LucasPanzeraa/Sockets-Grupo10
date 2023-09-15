@@ -36,6 +36,8 @@ public class Cliente {
             Mensaje mensaje = new Mensaje(null, null, null, publicKey);
 
             sendMessageToServer(mensaje);
+            publicKeyServidor = recivirCalveDelServidor();
+            System.out.println("clave " + publicKeyServidor);
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -46,9 +48,6 @@ public class Cliente {
         try {
             Thread receiveThread = new Thread(new recibirMensaje());
             receiveThread.start();
-
-            publicKeyServidor = recivirCalveDelServidor();
-            System.out.println("clave " + publicKeyServidor);
 
             Scanner scanner = new Scanner(System.in);
             while (true) {
@@ -86,25 +85,32 @@ public class Cliente {
             os.writeObject(mensaje);
             os.close();
             byte[] mensajeSerializado = baos.toByteArray();
-            /*
-            // Encripta el mensaje con la clave pública del servidor
-            String mensajeCifrado = RSA.encryptWithPublic(mensajeSerializado.toString(), publicKeyServidor);
 
-            byte[] mensajeCifradoByte = mensajeCifrado.getBytes();
+            if (publicKeyServidor != null){
+                // Encripta el mensaje con la clave pública del servidor
+                String mensajeCifrado = RSA.encryptWithPublic(mensajeSerializado.toString(), publicKeyServidor);
 
-            // Crea un DatagramPacket con el mensaje cifrado
-            DatagramPacket sendPacket = new DatagramPacket(mensajeCifradoByte, mensajeCifradoByte.length, serverAddress, puertoDelServer);
+                byte[] mensajeCifradoByte = mensajeCifrado.getBytes();
 
-            // Envía el paquete al servidor
-            clientSocket.send(sendPacket);
+                // Crea un DatagramPacket con el mensaje cifrado
+                DatagramPacket sendPacket = new DatagramPacket(mensajeCifradoByte, mensajeCifradoByte.length, serverAddress, puertoDelServer);
+
+                // Envía el paquete al servidor
+                clientSocket.send(sendPacket);
+            }
+            else {
+                byte[] mensajeByte = mensaje.toString().getBytes();
+                DatagramPacket sendPacket = new DatagramPacket(mensajeByte, mensajeByte.length, serverAddress, puertoDelServer);
+                clientSocket.send(sendPacket);
+            }
+
+
 
 
 
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException |
                  InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
-
-             */
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -123,8 +129,7 @@ public class Cliente {
             byte[] claveByte = new String( receivePacket.getData(), 0, receivePacket.getLength()).getBytes();
 
             PublicKey publicKeyServidor = RSA.getPublicKey(RSA.encode(claveByte));
-
-            return publicKeyServidor;
+        return publicKeyServidor;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -140,12 +145,16 @@ public class Cliente {
             while (true) {
                 try {
 
+
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                     clientSocket.receive(receivePacket);
                     RSA.decryptWithPrivate(receiveBuffer.toString(), privateKey);
 
                     String receivedMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
                     System.out.println("Mensaje recibido del servidor: " + receivedMessage);
+
+
+                    clientSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |

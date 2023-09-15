@@ -8,6 +8,7 @@ import java.net.*;
 import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
+
 public class Servidor {
     private static final int puertoServidor = 42385;
     private static final int tamañoDelBaffer = 1024;
@@ -33,6 +34,7 @@ public class Servidor {
     }
     public void start() {
         byte[] receiveBuffer = new byte[tamañoDelBaffer];
+
         while (true) {
             try {
 
@@ -64,8 +66,9 @@ public class Servidor {
 
                 if (!clients.containsKey(clientAddress)) {
                     clients.put(clientAddress, mensaje.getPubkey());
-                    sendMessageToClientPrueba(mensaje);
-                    System.out.println("mande el mensaje publica servidor");
+                    Mensaje mensaje1 = new Mensaje(null, null,null, publicKey);
+                    sendMessageToClientPrueba(mensaje1);
+                    System.out.println("mande el mensaje clave publica servidor");
                 }
                 for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
                     if (clientes.getKey().toString().equals(RSA.decryptWithPrivate(mensaje.getDestino(),privateKey))){

@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce94c47e-4817-48b8-a865-5c34db5804c5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Hasher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Mensaje.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/RSA.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Cliente.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Servidor.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../out/production/Sockets-Grupo10/Sockets-Grupo10.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Servidor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sockets-Grupo10.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Sockets-Grupo10.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +24,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$USER_HOME$/.jdks/openjdk-20.0.2/lib/src.zip!/java.base/java/lang/String.java" root0="FORCE_HIGHLIGHTING" />
@@ -45,13 +37,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/Colegio/Redes/Colegio/Redes/Sockets-Grupo10/src&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -62,16 +55,5 @@
       <updated>1694628718088</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Servidor.java</url>
-          <line>41</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
