@@ -1,14 +1,14 @@
 package src.src;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.security.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class Servidor {
     private static final int puertoServidor = 42385;
     private static final int tamañoDelBaffer = 1024;
@@ -41,60 +41,40 @@ public class Servidor {
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 serverSocket.receive(receivePacket);
 
-                byte[] mensajeCifrado = receivePacket.getData();
-                byte[] mensajeDesencriptado = RSA.decryptWithPrivate(mensajeCifrado.toString(), privateKey).getBytes();
+                InetAddress clientAddress = receivePacket.getAddress();
+                int clientPort = receivePacket.getPort();
 
-                ByteArrayInputStream bais = new ByteArrayInputStream(mensajeDesencriptado);
+                byte[] mensajeCifrado = receivePacket.getData();
+
+                ByteArrayInputStream bais = new ByteArrayInputStream(mensajeCifrado);
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 Mensaje mensaje = (Mensaje) ois.readObject();
                 ois.close();
 
-                System.out.println(mensaje);
-
-                InetAddress clientAddress = receivePacket.getAddress();
-                int clientPort = receivePacket.getPort();
-
-                System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + mensaje);
-                System.out.println("Destino: " + mensaje.getDestino());
-                System.out.println("Clave Pública del Cliente: " + mensajeDesencriptado.toString());
-
-                String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                System.out.println("Mensaje recibido de " + clientAddress + ":" + clientPort + ": " + message);
-
-
-                System.out.println(mensaje.getDestino());
-
                 if (!clients.containsKey(clientAddress)) {
                     clients.put(clientAddress, mensaje.getPubkey());
                     Mensaje mensaje1 = new Mensaje(null, null,null, publicKey);
-                    sendMessageToClientPrueba(mensaje1);
+                    sendMessageToClientPrueba(mensaje1, clientPort);
                     System.out.println("mande el mensaje clave publica servidor");
                 }
-                for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
-                    if (clientes.getKey().toString().equals(RSA.decryptWithPrivate(mensaje.getDestino(),privateKey))){
-                        InetAddress IPDestino = clientes.getKey();
-                        sendMessageToClientPrueba(mensaje);
+                else {
+                    Mensaje mensajeDescifrado = descifrarMensaje(mensaje);
+                    for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
+                        if (clientes.getKey().toString().equals(mensajeDescifrado.getDestino())){
 
-                        ByteArrayOutputStream mensajes = new ByteArrayOutputStream();
-                        try {
-                            ObjectOutputStream os = new ObjectOutputStream(mensajes);
-                            os.writeObject(mensaje);
-                            os.close();
-                            byte[] mensajeSerializado = mensajes.toByteArray();
+                            Mensaje mensajeFinal = cifrarMensaje(mensajeDescifrado, clientes.getValue());
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            sendMessageToClientPrueba(mensajeFinal, clientPort);
+
+                            sendAck(clientAddress, clientPort);
                         }
-
-                        serverSocket.send(receivePacket);
-                        sendAck(clientAddress, clientPort);
                     }
+
                 }
+
+
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
-                     BadPaddingException | IllegalBlockSizeException e) {
-                throw new RuntimeException(e);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -112,7 +92,24 @@ public class Servidor {
         serverSocket.send(sendPacket);
     }
 
-    private void sendMessageToClientPrueba(Mensaje mensaje) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public Mensaje descifrarMensaje (Mensaje mensaje) throws Exception {
+
+        mensaje.setDestino(RSA.decryptWithPrivate(mensaje.getDestino(), privateKey));
+        mensaje.setMensajeCifrado(RSA.decryptWithPrivate(mensaje.getMensajeCifrado(), privateKey));
+
+
+        return mensaje;
+    }
+
+    public Mensaje cifrarMensaje(Mensaje mensaje, PublicKey publicaDestino) throws Exception {
+
+        mensaje.setMensajeCifrado(RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicaDestino));
+        mensaje.setDestino(RSA.encryptWithPrivate(mensaje.getDestino(), privateKey));
+
+        return mensaje;
+    }
+
+    private void sendMessageToClientPrueba(Mensaje mensaje, int puertoDestino) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(baos);
         os.writeObject(mensaje);
@@ -121,7 +118,7 @@ public class Servidor {
         byte[] mensajeSerializado = baos.toByteArray();
 
         // Crea un DatagramPacket con el mensaje cifrado
-        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length);
+        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, InetAddress.getByName(mensaje.getDestino()), puertoDestino);
 
         // Envía el paquete al servidor
         serverSocket.send(sendPacket);

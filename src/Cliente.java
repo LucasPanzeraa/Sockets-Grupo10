@@ -3,15 +3,15 @@ package src.src;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.*;
+import java.util.Map;
 import java.util.Scanner;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class Cliente {
     private static final int puertoDelServer = 42385;
     private static final int TamañoDelBuffer = 1024;
@@ -55,10 +55,11 @@ public class Cliente {
                 String ipDestino = scanner.nextLine();
 
                 System.out.println("ingrese el mensaje");
-                String mensaje = scanner.nextLine();
+                String mensajeString = scanner.nextLine();
 
+                Mensaje mensaje = crearMensaje(ipDestino, mensajeString);
 
-                Mensaje message = encriptacionMensaje(ipDestino, mensaje);
+                Mensaje message = encriptacionMensaje(mensaje);
                 sendMessageToServer(message);
             }
         } catch (Exception e) {
@@ -70,42 +71,47 @@ public class Cliente {
         }
     }
 
-    public Mensaje encriptacionMensaje (String ipDestino, String mensaje) throws Exception {
+    public Mensaje crearMensaje (String ipDestino, String mensaje){
 
-        Mensaje mensaje1 = new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje), privateKey), RSA.encryptWithPublic(mensaje, publicKeyServidor), ipDestino, null);
+        return new Mensaje(mensaje, mensaje, ipDestino, null);
+    }
 
-        return mensaje1;
+    public Mensaje encriptacionMensaje (Mensaje mensaje) throws Exception {
+
+        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPrivate(mensaje.getMensajeCifrado(), privateKey), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), publicKey );
+    }
+
+    public Mensaje desencriptarMensaje (Mensaje mensaje){
+        mensaje.setMensajeHasheado(RSA.);
     }
 
     public void sendMessageToServer(Mensaje mensaje) {
         try {
-            // Serializa el mensaje
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream os = new ObjectOutputStream(baos);
-            os.writeObject(mensaje);
-            os.close();
-            byte[] mensajeSerializado = baos.toByteArray();
 
             if (publicKeyServidor != null){
-                // Encripta el mensaje con la clave pública del servidor
-                String mensajeCifrado = RSA.encryptWithPublic(mensajeSerializado.toString(), publicKeyServidor);
+                Mensaje mensajeCifrado = encriptacionMensaje(mensaje);
 
-                byte[] mensajeCifradoByte = mensajeCifrado.getBytes();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream os = new ObjectOutputStream(baos);
+                os.writeObject(mensajeCifrado);
+                os.close();
+                byte[] mensajeSerializado = baos.toByteArray();
 
-                // Crea un DatagramPacket con el mensaje cifrado
-                DatagramPacket sendPacket = new DatagramPacket(mensajeCifradoByte, mensajeCifradoByte.length, serverAddress, puertoDelServer);
+                DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, serverAddress, puertoDelServer);
 
-                // Envía el paquete al servidor
                 clientSocket.send(sendPacket);
             }
-            else {
-                byte[] mensajeByte = mensaje.toString().getBytes();
-                DatagramPacket sendPacket = new DatagramPacket(mensajeByte, mensajeByte.length, serverAddress, puertoDelServer);
+            else{
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream os = new ObjectOutputStream(baos);
+                os.writeObject(mensaje);
+                os.close();
+                byte[] mensajeSerializado = baos.toByteArray();
+
+                DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, serverAddress, puertoDelServer);
+
                 clientSocket.send(sendPacket);
             }
-
-
-
 
 
         } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException |
@@ -128,8 +134,7 @@ public class Cliente {
             // Convierte los datos recibidos en un String
             byte[] claveByte = new String( receivePacket.getData(), 0, receivePacket.getLength()).getBytes();
 
-            PublicKey publicKeyServidor = RSA.getPublicKey(RSA.encode(claveByte));
-        return publicKeyServidor;
+            return RSA.getPublicKey(RSA.encode(claveByte));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -144,6 +149,24 @@ public class Cliente {
 
             while (true) {
                 try {
+                    DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    clientSocket.receive(receivePacket);
+
+                    byte[] mensajeCifrado = receivePacket.getData();
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(mensajeCifrado);
+                    ObjectInputStream ois = new ObjectInputStream(bais);
+                    Mensaje mensaje = (Mensaje) ois.readObject();
+                    ois.close();
+
+                    if (publicKeyServidor == null){
+                        publicKeyServidor = mensaje.getPubkey();
+                    }
+                    else {
+
+
+                    }
+
 
 
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
@@ -157,9 +180,6 @@ public class Cliente {
                     clientSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                         InvalidKeyException | BadPaddingException e) {
-                    throw new RuntimeException(e);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

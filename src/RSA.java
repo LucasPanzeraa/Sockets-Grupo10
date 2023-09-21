@@ -1,9 +1,6 @@
 package src.src;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,8 +9,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-
-import static com.sun.org.apache.xerces.internal.impl.dv.util.Base64.encode;
 
 public class RSA {
 
@@ -34,9 +29,7 @@ public class RSA {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             publicKey = keyFactory.generatePublic(keySpec);
             return publicKey;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
         return publicKey;
@@ -91,7 +84,7 @@ public class RSA {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey1);
         byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
-        return new String(decryptedMessage,0, decryptedMessage.length);
+        return new String(decryptedMessage);
     }
 
     public String decryptWithPublic(String encryptedMessage, PublicKey publicKey1) throws Exception {
