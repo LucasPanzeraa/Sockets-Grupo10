@@ -8,7 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.*;
-import java.util.Map;
 import java.util.Scanner;
 
 @SuppressWarnings("NonAsciiCharacters")
@@ -36,7 +35,7 @@ public class Cliente {
             Mensaje mensaje = new Mensaje(null, null, null, publicKey);
 
             sendMessageToServer(mensaje);
-            publicKeyServidor = recivirCalveDelServidor();
+
             System.out.println("clave " + publicKeyServidor);
 
         } catch (IOException | NoSuchAlgorithmException e) {
@@ -73,16 +72,28 @@ public class Cliente {
 
     public Mensaje crearMensaje (String ipDestino, String mensaje){
 
-        return new Mensaje(mensaje, mensaje, ipDestino, null);
+        return new Mensaje(mensaje, mensaje, ipDestino, publicKey);
     }
 
     public Mensaje encriptacionMensaje (Mensaje mensaje) throws Exception {
 
-        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPrivate(mensaje.getMensajeCifrado(), privateKey), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), publicKey );
+        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicKeyServidor), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), publicKey );
     }
 
-    public Mensaje desencriptarMensaje (Mensaje mensaje){
-        mensaje.setMensajeHasheado(RSA.);
+    public Mensaje desencriptarMensaje (Mensaje mensaje) throws Exception {
+        mensaje.setMensajeHasheado(RSA.decryptWithPublic(mensaje.getMensajeHasheado(), publicKeyServidor));
+        mensaje.setMensajeCifrado(RSA.decryptWithPrivate(mensaje.getMensajeCifrado(), privateKey));
+
+        return mensaje;
+    }
+
+    public void comprobarIntegridad(Mensaje mensaje){
+        if (RSA.hasheo(mensaje.getMensajeCifrado()).equals(mensaje.getMensajeHasheado())){
+            System.out.println("El mensaje a llegado integro");
+        }
+        else {
+            System.out.println("hubo una falla de integridad en el envio del mensaje");
+        }
     }
 
     public void sendMessageToServer(Mensaje mensaje) {
@@ -123,25 +134,6 @@ public class Cliente {
     }
 
 
-    public PublicKey recivirCalveDelServidor(){
-        try {
-            byte[] receiveBuffer = new byte[TamañoDelBuffer];
-            DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-
-            // Espera a recibir un mensaje del servidor
-            clientSocket.receive(receivePacket);
-
-            // Convierte los datos recibidos en un String
-            byte[] claveByte = new String( receivePacket.getData(), 0, receivePacket.getLength()).getBytes();
-
-            return RSA.getPublicKey(RSA.encode(claveByte));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
     private class recibirMensaje implements Runnable {
         @Override
         public void run() {
@@ -164,18 +156,9 @@ public class Cliente {
                     }
                     else {
 
-
+                        Mensaje mensajeDesencriptado = desencriptarMensaje(mensaje);
+                        comprobarIntegridad(mensajeDesencriptado);
                     }
-
-
-
-                    DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                    clientSocket.receive(receivePacket);
-                    RSA.decryptWithPrivate(receiveBuffer.toString(), privateKey);
-
-                    String receivedMessage = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                    System.out.println("Mensaje recibido del servidor: " + receivedMessage);
-
 
                     clientSocket.close();
                 } catch (IOException e) {

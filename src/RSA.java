@@ -87,7 +87,7 @@ public class RSA {
         return new String(decryptedMessage);
     }
 
-    public String decryptWithPublic(String encryptedMessage, PublicKey publicKey1) throws Exception {
+    public static String decryptWithPublic(String encryptedMessage, PublicKey publicKey1) throws Exception {
         byte[] encryptedBytes = decode(encryptedMessage);
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, publicKey1);

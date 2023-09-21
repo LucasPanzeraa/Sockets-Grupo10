@@ -58,9 +58,12 @@ public class Servidor {
                     System.out.println("mande el mensaje clave publica servidor");
                 }
                 else {
-                    Mensaje mensajeDescifrado = descifrarMensaje(mensaje);
+                    InetAddress ipDestino = InetAddress.getByName(mensaje.getDestino());
+
                     for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
-                        if (clientes.getKey().toString().equals(mensajeDescifrado.getDestino())){
+                        if (clientes.getKey().equals(ipDestino)){
+
+                            Mensaje mensajeDescifrado = descifrarMensaje(mensaje, mensaje.getPubkey());
 
                             Mensaje mensajeFinal = cifrarMensaje(mensajeDescifrado, clientes.getValue());
 
@@ -92,17 +95,18 @@ public class Servidor {
         serverSocket.send(sendPacket);
     }
 
-    public Mensaje descifrarMensaje (Mensaje mensaje) throws Exception {
+    public Mensaje descifrarMensaje (Mensaje mensaje, PublicKey publicaOrigen) throws Exception {
 
-        mensaje.setDestino(RSA.decryptWithPrivate(mensaje.getDestino(), privateKey));
+        mensaje.setMensajeHasheado(RSA.decryptWithPublic(mensaje.getMensajeHasheado(), publicaOrigen));
         mensaje.setMensajeCifrado(RSA.decryptWithPrivate(mensaje.getMensajeCifrado(), privateKey));
-
+        mensaje.setDestino(RSA.decryptWithPublic(mensaje.getDestino(), publicaOrigen));
 
         return mensaje;
     }
 
     public Mensaje cifrarMensaje(Mensaje mensaje, PublicKey publicaDestino) throws Exception {
 
+        mensaje.setMensajeHasheado(RSA.decryptWithPrivate(mensaje.getMensajeHasheado(), privateKey));
         mensaje.setMensajeCifrado(RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicaDestino));
         mensaje.setDestino(RSA.encryptWithPrivate(mensaje.getDestino(), privateKey));
 
