@@ -8,12 +8,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.*;
+import java.util.Objects;
 import java.util.Scanner;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class Cliente {
     private static final int puertoDelServer = 42385;
-    private static final int TamañoDelBuffer = 1024;
+    private static final int TamañoDelBuffer = 2048;
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
     private PublicKey  publicKeyServidor;
@@ -36,8 +37,6 @@ public class Cliente {
 
             sendMessageToServer(mensaje);
 
-            System.out.println("clave " + publicKeyServidor);
-
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -58,8 +57,7 @@ public class Cliente {
 
                 Mensaje mensaje = crearMensaje(ipDestino, mensajeString);
 
-                Mensaje message = encriptacionMensaje(mensaje);
-                sendMessageToServer(message);
+                sendMessageToServer(mensaje);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -72,12 +70,12 @@ public class Cliente {
 
     public Mensaje crearMensaje (String ipDestino, String mensaje){
 
-        return new Mensaje(mensaje, mensaje, ipDestino, publicKey);
+        return new Mensaje(mensaje, mensaje, ipDestino, null);
     }
 
     public Mensaje encriptacionMensaje (Mensaje mensaje) throws Exception {
 
-        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicKeyServidor), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), publicKey );
+        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicKeyServidor), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), null );
     }
 
     public Mensaje desencriptarMensaje (Mensaje mensaje) throws Exception {
@@ -98,6 +96,7 @@ public class Cliente {
 
     public void sendMessageToServer(Mensaje mensaje) {
         try {
+
 
             if (publicKeyServidor != null){
                 Mensaje mensajeCifrado = encriptacionMensaje(mensaje);
@@ -141,6 +140,7 @@ public class Cliente {
 
             while (true) {
                 try {
+
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                     clientSocket.receive(receivePacket);
 
@@ -155,12 +155,17 @@ public class Cliente {
                         publicKeyServidor = mensaje.getPubkey();
                     }
                     else {
+                        if (!Objects.equals(mensaje.getMensajeCifrado(), "ACK")){
+                            Mensaje mensajeDesencriptado = desencriptarMensaje(mensaje);
+                            System.out.println("El mensaje recibido es: " + mensajeDesencriptado.getMensajeCifrado());
+                            comprobarIntegridad(mensajeDesencriptado);
+                        }
+                        else {
+                            System.out.println(mensaje.getMensajeCifrado());
+                        }
 
-                        Mensaje mensajeDesencriptado = desencriptarMensaje(mensaje);
-                        comprobarIntegridad(mensajeDesencriptado);
                     }
 
-                    clientSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {

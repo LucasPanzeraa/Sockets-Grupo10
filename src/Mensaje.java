@@ -52,3 +52,4 @@ public class Mensaje implements Serializable {
         return  mensajeHasheado + mensajeCifrado + destino + pubkey;
     }
 }
+

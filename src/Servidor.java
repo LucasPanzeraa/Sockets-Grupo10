@@ -11,7 +11,7 @@ import java.util.Map;
 @SuppressWarnings("NonAsciiCharacters")
 public class Servidor {
     private static final int puertoServidor = 42385;
-    private static final int tamañoDelBaffer = 1024;
+    private static final int tamañoDelBaffer = 2048;
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
     private DatagramSocket serverSocket;
@@ -51,31 +51,39 @@ public class Servidor {
                 Mensaje mensaje = (Mensaje) ois.readObject();
                 ois.close();
 
+
                 if (!clients.containsKey(clientAddress)) {
                     clients.put(clientAddress, mensaje.getPubkey());
                     Mensaje mensaje1 = new Mensaje(null, null,null, publicKey);
-                    sendMessageToClientPrueba(mensaje1, clientPort);
+                    sendMessageToClientPrueba(mensaje1,InetAddress.getByName(mensaje.getDestino()) ,clientPort);
                     System.out.println("mande el mensaje clave publica servidor");
                 }
                 else {
-                    InetAddress ipDestino = InetAddress.getByName(mensaje.getDestino());
+
+                    PublicKey publicaOrigen = null;
+                    for (Map.Entry<InetAddress, PublicKey> cliente: clients.entrySet()){
+                        if (cliente.getKey().equals(clientAddress)){
+                            publicaOrigen = cliente.getValue();
+                        }
+                    }
+
+                    InetAddress ipDestino = InetAddress.getByName(RSA.decryptWithPublic(mensaje.getDestino(), publicaOrigen));
+                    System.out.println(ipDestino);
 
                     for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
                         if (clientes.getKey().equals(ipDestino)){
 
-                            Mensaje mensajeDescifrado = descifrarMensaje(mensaje, mensaje.getPubkey());
+                            Mensaje mensajeDescifrado = descifrarMensaje(mensaje, publicaOrigen);
 
                             Mensaje mensajeFinal = cifrarMensaje(mensajeDescifrado, clientes.getValue());
 
-                            sendMessageToClientPrueba(mensajeFinal, clientPort);
+                            sendMessageToClientPrueba(mensajeFinal,InetAddress.getByName(RSA.decryptWithPublic(mensaje.getDestino(), publicKey)) ,clientPort);
 
-                            sendAck(clientAddress, clientPort);
+                            Mensaje mensaje1 = new Mensaje(null, null, null, null);
+                            sendAck(mensaje1,clientAddress, clientPort);
                         }
                     }
-
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -83,15 +91,17 @@ public class Servidor {
             }
         }
     }
-    private void sendAck(InetAddress clientAddress, int clientPort) throws IOException {
-        String ackMessage = "ACK";
-        byte[] ackBuffer = ackMessage.getBytes();
-        DatagramPacket ackPacket = new DatagramPacket(ackBuffer, ackBuffer.length, clientAddress, clientPort);
-        serverSocket.send(ackPacket);
-    }
-    private void sendMessageToClient(String message, InetAddress clientAddress, int clientPort) throws IOException {
-        byte[] sendBuffer = message.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, clientAddress, clientPort);
+    private void sendAck(Mensaje mensaje, InetAddress serverAddress, int puertoCliente) throws IOException {
+        mensaje.setMensajeCifrado("ACK");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(baos);
+        os.writeObject(mensaje);
+        os.close();
+        byte[] mensajeSerializado = baos.toByteArray();
+
+        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, serverAddress, puertoCliente);
+
         serverSocket.send(sendPacket);
     }
 
@@ -106,14 +116,14 @@ public class Servidor {
 
     public Mensaje cifrarMensaje(Mensaje mensaje, PublicKey publicaDestino) throws Exception {
 
-        mensaje.setMensajeHasheado(RSA.decryptWithPrivate(mensaje.getMensajeHasheado(), privateKey));
+        mensaje.setMensajeHasheado(RSA.encryptWithPrivate(mensaje.getMensajeHasheado(), privateKey));
         mensaje.setMensajeCifrado(RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicaDestino));
         mensaje.setDestino(RSA.encryptWithPrivate(mensaje.getDestino(), privateKey));
 
         return mensaje;
     }
 
-    private void sendMessageToClientPrueba(Mensaje mensaje, int puertoDestino) throws IOException {
+    private void sendMessageToClientPrueba(Mensaje mensaje,InetAddress ipDestino , int puertoDestino) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(baos);
         os.writeObject(mensaje);
@@ -122,7 +132,7 @@ public class Servidor {
         byte[] mensajeSerializado = baos.toByteArray();
 
         // Crea un DatagramPacket con el mensaje cifrado
-        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, InetAddress.getByName(mensaje.getDestino()), puertoDestino);
+        DatagramPacket sendPacket = new DatagramPacket(mensajeSerializado, mensajeSerializado.length, ipDestino, puertoDestino);
 
         // Envía el paquete al servidor
         serverSocket.send(sendPacket);
