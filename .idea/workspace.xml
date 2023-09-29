@@ -90,7 +90,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
-          <line>158</line>
+          <line>157</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -102,6 +102,11 @@
           <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
           <line>92</line>
           <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/RSA.java</url>
+          <line>98</line>
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
