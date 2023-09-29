@@ -1,5 +1,6 @@
-package src.src;
+package src.src.Simetrica;
 
+import javax.crypto.SecretKey;
 import java.io.Serializable;
 import java.security.PublicKey;
 
@@ -8,11 +9,13 @@ public class Mensaje implements Serializable {
     private String mensajeCifrado;
     private String destino;
     private PublicKey pubkey;
+
     public Mensaje(String mensajeHasheado, String mensajeCifrado, String destino, PublicKey pubkey) {
         this.mensajeHasheado = mensajeHasheado;
         this.mensajeCifrado = mensajeCifrado;
         this.destino = destino;
         this.pubkey = pubkey;
+
     }
 
     public PublicKey getPubkey() {

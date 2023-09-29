@@ -1,10 +1,13 @@
-package src.src;
+package src.src.Simetrica;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +19,10 @@ public class Servidor {
     private static PublicKey publicKey;
     private DatagramSocket serverSocket;
     private Map<InetAddress, PublicKey> clients;
+    private Map<InetAddress, SecretKey> clientsSecretKey;
     public Servidor() {
         try {
+            clientsSecretKey = new HashMap<>();
             serverSocket = new DatagramSocket(puertoServidor);
             clients = new HashMap<>();
             System.out.println("Servidor listo para recibir conexiones...");
@@ -53,10 +58,12 @@ public class Servidor {
 
 
                 if (!clients.containsKey(clientAddress)) {
+                    SecretKey secretKey = generarClaveAES();
                     clients.put(clientAddress, mensaje.getPubkey());
-                    Mensaje mensaje1 = new Mensaje(null, null,null, publicKey);
+                    clientsSecretKey.put(clientAddress, secretKey);
+                    Mensaje mensaje1 = new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(secretKeyBase64(secretKey)), privateKey), RSA.encryptWithPublic(secretKeyBase64(secretKey), mensaje.getPubkey()),null, publicKey);
                     sendMessageToClientPrueba(mensaje1,InetAddress.getByName(mensaje.getDestino()) ,clientPort);
-                    System.out.println("mande el mensaje clave publica servidor");
+                    System.out.println("mande el mensaje clave publica y secreta servidor");
                 }
                 else {
 
@@ -73,9 +80,9 @@ public class Servidor {
                     for (Map.Entry<InetAddress, PublicKey>clientes : clients.entrySet()){
                         if (clientes.getKey().equals(ipDestino)){
 
-                            Mensaje mensajeDescifrado = descifrarMensaje(mensaje, publicaOrigen);
+                            Mensaje mensajeDescifrado = descifrarMensaje(mensaje, publicaOrigen, clientsSecretKey.get(clientes.getKey()));
 
-                            Mensaje mensajeFinal = cifrarMensaje(mensajeDescifrado, clientes.getValue());
+                            Mensaje mensajeFinal = cifrarMensaje(mensajeDescifrado, clientsSecretKey.get(clientes.getKey()));
 
                             sendMessageToClientPrueba(mensajeFinal,InetAddress.getByName(RSA.decryptWithPublic(mensaje.getDestino(), publicKey)) ,clientPort);
 
@@ -105,25 +112,41 @@ public class Servidor {
         serverSocket.send(sendPacket);
     }
 
-    public Mensaje descifrarMensaje (Mensaje mensaje, PublicKey publicaOrigen) throws Exception {
+    public static SecretKey generarClaveAES() {
+        KeyGenerator keyGenerator = null;
+        try {
+            keyGenerator = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        keyGenerator.init(256);
+        return keyGenerator.generateKey();
+    }
+
+    public Mensaje descifrarMensaje (Mensaje mensaje, PublicKey publicaOrigen, SecretKey secretKey) throws Exception {
 
         mensaje.setMensajeHasheado(RSA.decryptWithPublic(mensaje.getMensajeHasheado(), publicaOrigen));
-        mensaje.setMensajeCifrado(RSA.decryptWithPrivate(mensaje.getMensajeCifrado(), privateKey));
+        mensaje.setMensajeCifrado(RSA.desencriptarConSecreta(mensaje.getMensajeCifrado(), secretKey));
         mensaje.setDestino(RSA.decryptWithPublic(mensaje.getDestino(), publicaOrigen));
 
         return mensaje;
     }
 
-    public Mensaje cifrarMensaje(Mensaje mensaje, PublicKey publicaDestino) throws Exception {
+    public Mensaje cifrarMensaje(Mensaje mensaje, SecretKey secretKey) throws Exception {
 
         mensaje.setMensajeHasheado(RSA.encryptWithPrivate(mensaje.getMensajeHasheado(), privateKey));
-        mensaje.setMensajeCifrado(RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicaDestino));
+        mensaje.setMensajeCifrado(RSA.encriptarConSecreta(mensaje.getMensajeCifrado(), secretKey));
         mensaje.setDestino(RSA.encryptWithPrivate(mensaje.getDestino(), privateKey));
 
         return mensaje;
     }
 
-    private void sendMessageToClientPrueba(Mensaje mensaje,InetAddress ipDestino , int puertoDestino) throws IOException {
+
+    public static String secretKeyBase64(SecretKey secretKey) {
+        return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+    }
+
+    private void sendMessageToClientPrueba(Mensaje mensaje, InetAddress ipDestino , int puertoDestino) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(baos);
         os.writeObject(mensaje);

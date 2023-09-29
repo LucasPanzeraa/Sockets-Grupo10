@@ -1,4 +1,4 @@
-package src.src;
+package src.src.Simetrica;
 
 import javax.crypto.Cipher;
 import java.io.File;
@@ -9,6 +9,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
 
 public class RSA {
 
@@ -52,7 +54,21 @@ public class RSA {
         return privateKey;
     }
 
+    public final static String delimitadorAES = "DelimitadorCaracterUnEsEste";
+    public final static String delimitadorCodificadoAES = Base64.getEncoder().encodeToString(delimitadorAES.getBytes());
 
+    public static String encriptarConSecreta(String mensaje, SecretKey clave) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, clave);
+        return Base64.getEncoder().encodeToString(cipher.doFinal(mensaje.getBytes())) + delimitadorCodificadoAES + Base64.getEncoder().encodeToString(cipher.getIV());
+    }
+
+    public static String desencriptarConSecreta(String mensajeEncriptado, SecretKey clave) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        String[] partes = mensajeEncriptado.split(delimitadorCodificadoAES);
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.DECRYPT_MODE, clave, new GCMParameterSpec(128, Base64.getDecoder().decode(partes[1])));
+        return new String(cipher.doFinal(Base64.getDecoder().decode(partes[0])));
+    }
     public static String encryptWithPublic(String message, PublicKey publicKey1) throws Exception {
         byte[] messageToBytes = message.getBytes();
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");

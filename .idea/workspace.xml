@@ -5,19 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce94c47e-4817-48b8-a865-5c34db5804c5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Simetrica/Cliente.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Simetrica/Mensaje.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Simetrica/RSA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Simetrica/Servidor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/Hasher.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/Hasher.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente$recibirMensaje.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente$recibirMensaje.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Mensaje.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Mensaje.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/RSA.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/RSA.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Servidor.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Servidor.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/RSA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RSA.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente$recibirMensaje.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Mensaje.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/RSA.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Servidor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Cliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Mensaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Mensaje.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RSA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/RSA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Servidor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,14 +48,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10/src/Simetrica",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Simetrica" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -63,5 +74,36 @@
       <updated>1694628718088</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
+          <line>54</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
+          <line>169</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
+          <line>158</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
+          <line>91</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
+          <line>92</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

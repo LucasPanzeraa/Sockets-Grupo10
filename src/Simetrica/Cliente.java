@@ -1,8 +1,9 @@
-package src.src;
+package src.src.Simetrica;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -10,6 +11,8 @@ import java.net.InetAddress;
 import java.security.*;
 import java.util.Objects;
 import java.util.Scanner;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class Cliente {
@@ -18,6 +21,7 @@ public class Cliente {
     private static PrivateKey privateKey;
     private static PublicKey publicKey;
     private PublicKey  publicKeyServidor;
+    private SecretKey claveSecreta;
     private DatagramSocket clientSocket;
     private InetAddress serverAddress;
 
@@ -75,10 +79,16 @@ public class Cliente {
 
     public Mensaje encriptacionMensaje (Mensaje mensaje) throws Exception {
 
-        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encryptWithPublic(mensaje.getMensajeCifrado(), publicKeyServidor), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), null );
+        return new Mensaje(RSA.encryptWithPrivate(RSA.hasheo(mensaje.getMensajeHasheado()), privateKey), RSA.encriptarConSecreta(mensaje.getMensajeCifrado(), claveSecreta), RSA.encryptWithPrivate(mensaje.getDestino(), privateKey), null );
     }
 
     public Mensaje desencriptarMensaje (Mensaje mensaje) throws Exception {
+        mensaje.setMensajeHasheado(RSA.decryptWithPublic(mensaje.getMensajeHasheado(), publicKeyServidor));
+        mensaje.setMensajeCifrado(RSA.desencriptarConSecreta(mensaje.getMensajeCifrado(), claveSecreta));
+
+        return mensaje;
+    }
+    public Mensaje desencriptarClaveAES (Mensaje mensaje) throws Exception {
         mensaje.setMensajeHasheado(RSA.decryptWithPublic(mensaje.getMensajeHasheado(), publicKeyServidor));
         mensaje.setMensajeCifrado(RSA.decryptWithPrivate(mensaje.getMensajeCifrado(), privateKey));
 
@@ -93,6 +103,12 @@ public class Cliente {
             System.out.println("hubo una falla de integridad en el envio del mensaje");
         }
     }
+
+
+    public static SecretKey base64SecretKey(String base64Key) {
+        return new SecretKeySpec(Base64.getDecoder().decode(base64Key), 0, Base64.getDecoder().decode(base64Key).length, "AES");
+    }
+
 
     public void sendMessageToServer(Mensaje mensaje) {
         try {
@@ -153,6 +169,9 @@ public class Cliente {
 
                     if (publicKeyServidor == null){
                         publicKeyServidor = mensaje.getPubkey();
+                        Mensaje mensaje1 = desencriptarClaveAES(mensaje);
+                        comprobarIntegridad(mensaje);
+                        claveSecreta = base64SecretKey(mensaje1.getMensajeCifrado());
                     }
                     else {
                         if (!Objects.equals(mensaje.getMensajeCifrado(), "ACK")){
