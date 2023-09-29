@@ -150,7 +150,7 @@ public class Cliente {
 
 
     private class recibirMensaje implements Runnable {
-        @Override
+
         public void run() {
             byte[] receiveBuffer = new byte[TamañoDelBuffer];
 

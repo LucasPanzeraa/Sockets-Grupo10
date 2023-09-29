@@ -1,6 +1,5 @@
 package src.src.Simetrica;
 
-import javax.crypto.SecretKey;
 import java.io.Serializable;
 import java.security.PublicKey;
 

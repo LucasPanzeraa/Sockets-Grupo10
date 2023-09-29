@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ce94c47e-4817-48b8-a865-5c34db5804c5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Simetrica/Cliente.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Simetrica/Mensaje.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ChatCliente_Servidor/Cliente.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ChatCliente_Servidor/Servidor.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/Simetrica/RSA.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Simetrica/Servidor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Cliente$1.class" beforeDir="false" />
@@ -17,10 +16,15 @@
       <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Mensaje.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/RSA.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Servidor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Simetrica/Mensaje.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Simetrica/Mensaje.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Simetrica/Servidor.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Sockets-Grupo10/src/src/Simetrica/Servidor.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Cliente.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Mensaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Mensaje.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/RSA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/RSA.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Asimetrica/Servidor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simetrica/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simetrica/Cliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simetrica/Mensaje.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simetrica/Mensaje.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simetrica/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simetrica/Servidor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +56,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10/src/Simetrica",
+    "last_opened_file_path": "/home/panzera-brandon/Escritorio/Redes/Sockets-Grupo10/src/ChatCliente_Servidor",
     "project.structure.last.edited": "SDKs",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
@@ -61,6 +65,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/ChatCliente_Servidor" />
       <recent name="$PROJECT_DIR$/src/Simetrica" />
     </key>
   </component>
@@ -79,34 +84,23 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
-          <line>54</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
           <line>169</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
-          <line>157</line>
-          <option name="timeStamp" value="3" />
+          <line>87</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
-          <line>91</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Simetrica/Cliente.java</url>
-          <line>92</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Simetrica/RSA.java</url>
-          <line>98</line>
-          <option name="timeStamp" value="6" />
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/Simetrica/Servidor.java</url>
+          <line>155</line>
+          <properties class="src.src.Simetrica.Servidor" method="sendMessageToClientPrueba">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
